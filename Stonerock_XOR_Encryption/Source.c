@@ -3,6 +3,8 @@
 
 #define MAX_KEY_LENGTH 100
 
+void clear_buffer();
+
 void xorEncryptDecrypt(char *data, const char *key) {
     int keyLen = strlen(key);
     for (int i = 0; data[i] != '\0'; i++) {
@@ -13,7 +15,8 @@ void xorEncryptDecrypt(char *data, const char *key) {
 int main() {
     char mode[10];
     printf("Enter 'encrypt' or 'decrypt': ");
-    scanf("%s", mode);
+    fgets(mode, 10, stdin);
+    mode[strcspn(mode, "\n")] = '\0'; // Remove newline
 
     if (strcmp(mode, "encrypt") == 0) {
         char message[MAX_KEY_LENGTH];
@@ -24,12 +27,14 @@ int main() {
         char key[MAX_KEY_LENGTH];
         printf("Enter the encryption key: ");
         scanf("%s", key);
+        clear_buffer();
 
         xorEncryptDecrypt(message, key);
 
         char filename[100];
         printf("Enter the output filename: ");
         scanf("%s", filename);
+        clear_buffer();
 
         FILE *file = fopen(filename, "w");
         if (file == NULL) {
@@ -43,6 +48,8 @@ int main() {
         char filename[100];
         printf("Enter the input filename: ");
         scanf("%s", filename);
+        clear_buffer();
+
 
         FILE *file = fopen(filename, "r");
         if (file == NULL) {
@@ -68,6 +75,7 @@ int main() {
         char key[MAX_KEY_LENGTH];
         printf("Enter the decryption key: ");
         scanf("%s", key);
+        clear_buffer();
 
         xorEncryptDecrypt(encryptedData, key);
 
@@ -80,4 +88,9 @@ int main() {
     }
 
     return 0;
+}
+
+void clear_buffer() {
+    int characheter;
+    while ((characheter = getchar()) != '\n' && characheter != EOF) {};
 }

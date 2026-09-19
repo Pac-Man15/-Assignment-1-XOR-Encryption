@@ -3,6 +3,8 @@
 
 #define MAX_KEY_LENGTH 100
 
+void clear_buffer();
+
 void xorEncryptDecrypt(char *data, const char *key) {
     int keyLen = strlen(key);
     for (int i = 0; data[i] != '\0'; i++) {

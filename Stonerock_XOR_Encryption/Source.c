@@ -13,7 +13,8 @@ void xorEncryptDecrypt(char *data, const char *key) {
 int main() {
     char mode[10];
     printf("Enter 'encrypt' or 'decrypt': ");
-    scanf("%s", mode);
+    fgets(mode, 10, stdin);
+    mode[strcspn(mode, "\n")] = '\0'; // Remove newline
 
     if (strcmp(mode, "encrypt") == 0) {
         char message[MAX_KEY_LENGTH];
@@ -81,3 +82,4 @@ int main() {
 
     return 0;
 }
+

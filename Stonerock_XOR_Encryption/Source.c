@@ -1,12 +1,17 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 #define MAX_KEY_LENGTH 100
 
 void clear_buffer();
 
-void xorEncryptDecrypt(char *data, const char *key) {
+int is_only_whitespace(const char* str);
+
+void xorEncryptDecrypt(char* data, const char* key) {
     int keyLen = strlen(key);
+
     for (int i = 0; data[i] != '\0'; i++) {
         data[i] ^= key[i % keyLen];
     }
@@ -14,29 +19,42 @@ void xorEncryptDecrypt(char *data, const char *key) {
 
 int main() {
     char mode[10];
+
     printf("Enter 'encrypt' or 'decrypt': ");
-    fgets(mode, 10, stdin);
-    mode[strcspn(mode, "\n")] = '\0'; // Remove newline
+    fgets(mode, sizeof(mode), stdin);
+    mode[strcspn(mode, "\n")] = '\0';
 
     if (strcmp(mode, "encrypt") == 0) {
         char message[MAX_KEY_LENGTH];
-        printf("Enter the message to encrypt: ");
-        fgets(message, sizeof(message), stdin);
-        message[strcspn(message, "\n")] = '\0'; // Remove newline
+
+        // Keep asking until a non-whitespace message is entered
+        do {
+            printf("Enter the message to encrypt: ");
+            fgets(message, sizeof(message), stdin);
+            message[strcspn(message, "\n")] = '\0';
+
+            if (is_only_whitespace(message)) {
+                printf("Message cannot be empty or contain only whitespace. Please try again.\n");
+            }
+
+        } while (is_only_whitespace(message));
 
         char key[MAX_KEY_LENGTH];
+
         printf("Enter the encryption key: ");
-        scanf("%s", key);
+        scanf("%99s", key);
         clear_buffer();
 
         xorEncryptDecrypt(message, key);
 
         char filename[100];
+
         printf("Enter the output filename: ");
-        scanf("%s", filename);
+        scanf("%99s", filename);
         clear_buffer();
 
-        FILE *file = fopen(filename, "w");
+        FILE* file = fopen(filename, "w");
+
         if (file == NULL) {
             perror("Error opening file for writing");
             return 1;
@@ -44,14 +62,19 @@ int main() {
 
         fwrite(message, sizeof(char), strlen(message), file);
         fclose(file);
-    } else if (strcmp(mode, "decrypt") == 0) {
+
+        printf("Message encrypted successfully.\n");
+
+    }
+    else if (strcmp(mode, "decrypt") == 0) {
         char filename[100];
+
         printf("Enter the input filename: ");
-        scanf("%s", filename);
+        scanf("%99s", filename);
         clear_buffer();
 
+        FILE* file = fopen(filename, "r");
 
-        FILE *file = fopen(filename, "r");
         if (file == NULL) {
             perror("Error opening file for reading");
             return 1;
@@ -61,7 +84,8 @@ int main() {
         long fileSize = ftell(file);
         fseek(file, 0, SEEK_SET);
 
-        char *encryptedData = (char *)malloc(fileSize + 1);
+        char* encryptedData = (char*)malloc(fileSize + 1);
+
         if (encryptedData == NULL) {
             perror("Error allocating memory");
             fclose(file);
@@ -73,8 +97,9 @@ int main() {
         fclose(file);
 
         char key[MAX_KEY_LENGTH];
+
         printf("Enter the decryption key: ");
-        scanf("%s", key);
+        scanf("%99s", key);
         clear_buffer();
 
         xorEncryptDecrypt(encryptedData, key);
@@ -82,7 +107,9 @@ int main() {
         printf("Decrypted message: %s\n", encryptedData);
 
         free(encryptedData);
-    } else {
+
+    }
+    else {
         printf("Invalid mode. Please enter 'encrypt' or 'decrypt'.\n");
         return 1;
     }
@@ -91,6 +118,18 @@ int main() {
 }
 
 void clear_buffer() {
-    int characheter;
-    while ((characheter = getchar()) != '\n' && characheter != EOF) {};
+    int character;
+
+    while ((character = getchar()) != '\n' && character != EOF) {
+        // Clear remaining characters from the input buffer
+    }
+}
+
+int is_only_whitespace(const char* str) {
+    for (int i = 0; str[i] != '\0'; i++) {
+        if (!isspace((unsigned char)str[i])) {
+            return 0;
+        }
+    }
+    return 1;
 }

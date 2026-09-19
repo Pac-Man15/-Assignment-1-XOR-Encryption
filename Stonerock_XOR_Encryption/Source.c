@@ -25,12 +25,14 @@ int main() {
         char key[MAX_KEY_LENGTH];
         printf("Enter the encryption key: ");
         scanf("%s", key);
+        clear_buffer();
 
         xorEncryptDecrypt(message, key);
 
         char filename[100];
         printf("Enter the output filename: ");
         scanf("%s", filename);
+        clear_buffer();
 
         FILE *file = fopen(filename, "w");
         if (file == NULL) {
@@ -44,6 +46,8 @@ int main() {
         char filename[100];
         printf("Enter the input filename: ");
         scanf("%s", filename);
+        clear_buffer();
+
 
         FILE *file = fopen(filename, "r");
         if (file == NULL) {
@@ -69,6 +73,7 @@ int main() {
         char key[MAX_KEY_LENGTH];
         printf("Enter the decryption key: ");
         scanf("%s", key);
+        clear_buffer();
 
         xorEncryptDecrypt(encryptedData, key);
 
@@ -83,3 +88,7 @@ int main() {
     return 0;
 }
 
+void clear_buffer() {
+    int characheter;
+    while ((characheter = getchar()) != '\n' && characheter != EOF) {};
+}
